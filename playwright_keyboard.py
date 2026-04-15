@@ -11,7 +11,7 @@ with sync_playwright() as playwright:
     email_input.focus()
 
     for char in 'user@gmail.com':
-        page.keyboard.press(char, delay=300)
+        page.keyboard.type(char, delay=300)
 
     page.keyboard.press('ControlOrMeta+A')
 
