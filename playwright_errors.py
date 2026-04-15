@@ -15,7 +15,7 @@ with sync_playwright() as playwright:
     # login_button.fill('unknown')
 
     # Пытаемся изменить текст заголовка
-    page.evaluate("""
-                  const title = document.getElementById('authentication-ui-course-title-text');
-                  title.textContent = 'New Text';
-                  """)
+    # page.evaluate("""
+    #               const title = document.getElementById('authentication-ui-course-title-text');
+    #               title.textContent = 'New Text';
+    #               """)
