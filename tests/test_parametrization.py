@@ -1,4 +1,6 @@
 import pytest
+from _pytest.fixtures import SubRequest
+
 
 @pytest.mark.parametrize("number", [1, 2, 3, -1])
 def test_numbers(number: int):
@@ -15,3 +17,78 @@ def test_several_numbers(number: int, expected: int):
 def test_multiplication_of_numbers(os: str, browser: str):
     assert len(os + browser) > 0
 
+
+@pytest.fixture(params=["chromium", "webkit", "firefox"])
+def browser(request: SubRequest):
+    return request.param
+
+
+def test_open_browser(browser: str):
+    print(f'Running test on browser: {browser}')
+
+
+@pytest.mark.parametrize("user", ["Alice", "Zara"])
+class TestOperations:
+    @pytest.mark.parametrize("account", ["Credit card", "Debit card"])
+    def test_user_with_operations(self, user: str, account: str):
+        # запуститься 4 раза с перебором параметров user и account
+        print(f"User with operations: {user}")
+
+    def test_user_without_operations(self, user: str):
+        print(f"User without operations: {user}")
+
+
+# Словарь пользователей: номер телефона — ключ, описание — значение
+users = {
+    "+70000000011": "User with money on bank account",
+    "+70000000022": "User without money on bank account",
+    "+70000000033": "User with operations on bank account"
+}
+
+@pytest.mark.parametrize(
+    "phone_number",
+    users.keys(),  # Передаем список номеров телефонов
+    ids=lambda phone_number: f"{phone_number}: {users[phone_number]}"  # Генерируем идентификаторы динамически
+)
+def test_identifiers(phone_number: str):
+    pass
+
+
+@pytest.mark.parametrize("x", [10, 20])  # ids не указаны → сгенерируются автоматически
+def test_auto_ids(x):
+    ...
+
+
+@pytest.mark.parametrize("role", ["admin", "user"], ids=["ADMIN", "USER"])
+def test_roles(role):
+    ...
+
+
+@pytest.mark.parametrize("n", [0, 255], ids=("min", "max"))
+def test_bounds(n):
+    ...
+
+
+@pytest.mark.parametrize(
+    "params",
+    [(200, {"ok": True}), (400, {"error": "bad"})],
+    ids=lambda p: f"status={p[0]}"
+)
+def test_api(params):
+    ...
+
+
+@pytest.mark.parametrize("x", [0, 1, 2], ids=lambda v: "zero" if v == 0 else None)
+def test_mixed_ids(x):
+    ...
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        pytest.param("", id="empty"),
+        pytest.param("x" * 255, id="max-len"),
+    ],
+)
+def test_name(name):
+    ...
