@@ -20,7 +20,7 @@ class LoginPage(BasePage):
         expect(self.email_input).to_have_value(email)
 
         self.password_input.fill(password)
-        # Проверяем, что email введен корректно
+        # Проверяем, что пароль введен корректно
         expect(self.password_input).to_have_value(password)
 
     # Метод для нажатия на кнопку "Login"
