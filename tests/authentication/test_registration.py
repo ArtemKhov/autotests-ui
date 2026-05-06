@@ -4,9 +4,12 @@ import pytest
 from pages.dashboard.dashboard_page import DashboardPage
 from pages.authentication.registration_page import RegistrationPage
 
+from tools.allure.tags import AllureTag
+
 
 @pytest.mark.regression
 @pytest.mark.registration
+@allure.tag(AllureTag.REGRESSION, AllureTag.REGISTRATION)
 class TestRegistration:
 
     @allure.title("Registration with correct email, username and password")
