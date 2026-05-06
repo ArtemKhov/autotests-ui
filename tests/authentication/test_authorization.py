@@ -1,3 +1,4 @@
+import allure
 import pytest
 
 from pages.authentication.login_page import LoginPage
@@ -16,6 +17,7 @@ class TestAuthorization:
             ("  ", "password")
         ]
     )
+    @allure.title('User login with wrong email or password')
     def test_wrong_email_or_password_authorization(self, login_page: LoginPage, email: str, password: str) -> None:
         login_page.visit("https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/login")
         login_page.login_form.fill(email=email, password=password)
@@ -23,6 +25,7 @@ class TestAuthorization:
         login_page.click_login_button()
         login_page.check_visible_wrong_email_or_password_alert()
 
+    @allure.title("User login with correct email and password")
     def test_successful_authorization(
             self,
             login_page: LoginPage,
@@ -46,6 +49,7 @@ class TestAuthorization:
         dashboard_page.navbar.check_visible('username')
         dashboard_page.sidebar.check_visible()
 
+    @allure.title("Navigation from login page to registration page")
     def test_navigate_from_authorization_to_registration(
             self,
             login_page: LoginPage,
