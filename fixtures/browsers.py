@@ -1,16 +1,25 @@
 from typing import Generator
 
+import allure
 import pytest
+from _pytest.fixtures import SubRequest
 from playwright.sync_api import Playwright, Page
 
 from pages.authentication.registration_page import RegistrationPage
 
 
 @pytest.fixture
-def chromium_page(playwright: Playwright) -> Generator[Page]:
+def chromium_page(request: SubRequest, playwright: Playwright) -> Generator[Page]:
     browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()  # Создаем контекст для новой сессии браузера
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)  # Включаем трейсинг
+
     yield browser.new_page()
+
+    context.tracing.stop(path=f'./tracing/{request.node.name}.zip')  # Сохраняем трейсинг в файл
     browser.close()
+
+    allure.attach.file(f'./tracing/{request.node.name}.zip', name='trace', extension='zip')
 
 
 @pytest.fixture(scope='session')
@@ -31,8 +40,14 @@ def initialize_browser_state(playwright: Playwright) -> None:
 
 
 @pytest.fixture
-def chromium_page_with_state(initialize_browser_state, playwright: Playwright) -> Generator[Page]:
+def chromium_page_with_state(initialize_browser_state, request: SubRequest, playwright: Playwright) -> Generator[Page]:
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context(storage_state="browser-state.json")
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)
+
     yield context.new_page()
+
+    context.tracing.stop(path=f'./tracing/{request.node.name}.zip')
     browser.close()
+
+    allure.attach.file(f'./tracing/{request.node.name}.zip', name='trace', extension='zip')
