@@ -1,6 +1,5 @@
 from typing import Generator
 
-import allure
 import pytest
 from _pytest.fixtures import SubRequest
 from playwright.sync_api import Playwright, Page
@@ -11,9 +10,13 @@ from tools.playwright.pages import initialize_playwright_page
 from tools.routes import AppRoute
 
 
-@pytest.fixture
-def chromium_page(request: SubRequest, playwright: Playwright) -> Generator[Page]:
-    yield from initialize_playwright_page(playwright, test_name=request.node.name)
+@pytest.fixture(params=settings.browsers)
+def page(request: SubRequest, playwright: Playwright) -> Generator[Page]:
+    yield from initialize_playwright_page(
+        playwright,
+        test_name=request.node.name,
+        browser_type=request.param  # Передаем браузер как параметр
+    )
 
 
 @pytest.fixture(scope='session')
@@ -35,10 +38,11 @@ def initialize_browser_state(playwright: Playwright) -> None:
     browser.close()
 
 
-@pytest.fixture
-def chromium_page_with_state(initialize_browser_state, request: SubRequest, playwright: Playwright) -> Generator[Page]:
+@pytest.fixture(params=settings.browsers)
+def page_with_state(initialize_browser_state, request: SubRequest, playwright: Playwright) -> Generator[Page]:
     yield from initialize_playwright_page(
         playwright,
         test_name=request.node.name,
-        storage_state=settings.browser_state_file  # Используем settings.browser_state_file
+        browser_type=request.param,  # Передаем браузер как параметр
+        storage_state=settings.browser_state_file,
     )
