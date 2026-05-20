@@ -11,7 +11,7 @@ from tools.routes import AppRoute
 
 
 @pytest.fixture(params=settings.browsers)
-def page(request: SubRequest, playwright: Playwright) -> Generator[Page]:
+def page(request: SubRequest, playwright: Playwright) -> Generator[Page, None, None]:
     yield from initialize_playwright_page(
         playwright,
         test_name=request.node.name,
@@ -39,7 +39,7 @@ def initialize_browser_state(playwright: Playwright) -> None:
 
 
 @pytest.fixture(params=settings.browsers)
-def page_with_state(initialize_browser_state, request: SubRequest, playwright: Playwright) -> Generator[Page]:
+def page_with_state(initialize_browser_state, request: SubRequest, playwright: Playwright) -> Generator[Page, None, None]:
     yield from initialize_playwright_page(
         playwright,
         test_name=request.node.name,
