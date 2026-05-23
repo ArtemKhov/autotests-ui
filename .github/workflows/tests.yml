@@ -39,6 +39,36 @@ jobs:
         run: |
           # Запускаем тесты, отмеченные как "regression", генерируем результаты для Allure
           pytest -m regression --alluredir=allure-results --numprocesses 2
+          
+      # Восстанавливаем историю покрытия из кеша
+      - name: Restore Coverage history
+        uses: actions/cache/restore@v4
+        with:
+          path: coverage-history.json
+          key: coverage-history-${{ github.run_id }}
+          restore-keys: |
+            coverage-history-
+
+      # Генерируем HTML-отчет и обновляем историю
+      - name: Generate Coverage report
+        run: |
+          ui-coverage-tool save-report
+
+      # Сохраняем историю обратно в кеш
+      - name: Cache Coverage  history
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: coverage-history.json
+          key: coverage-history-${{ github.run_id }}
+
+      # Загружаем HTML-отчет как артефакт
+      - name: Upload Coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.html
 
       # 5. Шаг, который будет выгружать отчет в папку
       - name: Upload Allure results
@@ -78,7 +108,7 @@ jobs:
           allure_results: allure-results
           allure_history: allure-history
 
-      # 1. Шаг, который загружает отчет в Github Pages
+      # 4. Шаг, который загружает отчет в Github Pages
       - name: Deploy report to Github Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
